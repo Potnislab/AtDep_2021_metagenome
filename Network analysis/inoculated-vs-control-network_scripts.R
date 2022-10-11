@@ -1,4 +1,11 @@
+#Network analysis is an RAM intensive job so we submitted the codes in HPC.
 
+#/bin/bash
+source /opt/asn/etc/asn-bash-profiles-special/modules.sh
+module load R/4.1.0
+R CMD BATCH inference.R2
+
+#The inference.R2 file contains the following R scripts.
 
 library(devtools)
 library(SpiecEasi)
