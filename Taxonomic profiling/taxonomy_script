@@ -1,0 +1,98 @@
+1.	Taxonomic classification of the kneaddata processed sequence files was done using Kraken2 (https://github.com/DerrickWood/Kraken22/wiki), using 
+the standard database.
+#First, we installed Kraken2 as a kraken2 environment using conda.
+
+conda create --yes -n kraken2
+
+#Then activate the environment with 
+source activate kraken2
+
+#Install kraken2 
+conda install -c "bioconda/label/cf201901" kraken2
+
+
+#For kraken database, we can downloaded the latest database from https://benlangmead.github.io/aws-indexes/k2 and unzip it. The database is more 
+than 150GB so we can simply download the database in our working directory. We first created a directory where all our database will be located.
+
+mkdir kraken_db
+
+#Then we download the standard database into the folder by running the command in queue, as it takes time and memory
+
+#!/bin/bash
+source activate kraken2
+kraken2-build --standard –-threads 10 --db /scratch/aubrrb/kraken_db
+
+
+#Then we build a standard kraken2 database with the following code (We ran the command through the queue as it required more than 150Gb space)
+
+#!/bin/bash
+source activate kraken2
+kraken2-build --standard --db kraken_db
+
+2. To run Kraken2, first we made a directory kraken_out  where all the output will be redirected and kraken_report where reports file will be stored. 
+The code was ran with about 120gb memory as it is ram intensive. Depending on the data, we might have to change the memory requirements.
+
+#!/bin/bash
+Source activate kraken2
+for fq1 in ./*_kneaddata_paired_1.fastq
+do
+echo “working with file $fq1”
+base=$(basename $fq1 _kneaddata_paired_1.fastq)
+    echo "base name is $base"
+    fq1=./${base}_kneaddata_paired_1.fastq
+    fq2=./${base}_kneaddata_paired_2.fastq
+  kraken2 --db /scratch/aubrrb/kraken_db \
+  --confidence 0.1 \
+  --threads 4 \
+  --use-names \
+  --output kraken_out/${base}_output.txt \
+  --report kraken_reports/${base}_report.txt \
+  --paired $fq1 $fq2 
+done
+
+
+2. Kraken2 doesn’t estimate species abundances, for which we used Bracken (Bayesian Reestimation of Abundance with Kraken) (https://ccb.jhu.edu/software/bracken/).
+We installed Bracken using conda similar to that of kraken.
+
+conda create -n bracken
+
+#Then activate the environment
+
+source activate bracken
+ 
+#Install bracken
+
+conda install -c bioconda bracken
+
+
+#Then we build the database for braken for the first time from kraken. We used the default kmer length of 35 and read length of 100 as couple of our base 
+samples had lower read length
+
+bracken-build -d kraken_db -t 10 -k 35 -l 100
+
+#Then we ran Bracken on all the report files inside kraken_report using the following command.
+
+#!/bin/bash
+source activate bracken
+for i in ./*_report.txt
+do
+  filename=$(basename "$i")
+  fname="${filename%_report.txt}"
+  bracken -d /scratch/aubrrb/kraken_db -i $i -r 100 -t 10 -l S -o ${fname}_bracken.txt -w ${fname}_bracken_report.txt
+done
+
+
+3. Then we combined bracken result files into a single output using the python script (https://github.com/jenniferlu717/Bracken/tree/master/analysis_scripts) and ran the following code 
+
+
+bracken_combine_outputs.py –-files *_bracken.txt -o pepper_bracken.txt
+
+
+4. Finally we converted the bracken report files into .biom files for diversity analysis in phyloseq. We installed a program kraken-biom (https://github.com/smdabdoub/kraken-biom) following the instruction and ran the following code to get a biom file.
+
+#!/bin/bash
+module load python/3.5.0
+source activate kraken-biom
+kraken-biom *_bracken_report.txt -o bracken.biom --fmt json
+
+#The bracken.biom file is then used as an input in phyloseq for further analysis in R.
