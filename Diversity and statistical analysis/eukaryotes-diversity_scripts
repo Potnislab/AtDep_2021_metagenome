@@ -1,0 +1,88 @@
+
+```{r}
+library(vegan)
+library(ggplot2)
+library(vegan)
+library(ggplot2)
+library(viridis)
+library(ggpubr)
+library(cowplot)
+```
+
+```{r}
+Fungi <- read.csv(file.choose(), header= TRUE, row.names = 1)
+Fungi
+Fungi.env <- read.csv(file.choose(),header = T, row.names = 1)
+as.factor(Fungi.env)
+Fungi.env$Environment <- as.factor(Fungi.env$Environment)
+Fungi.env$Interaction <- as.factor(Fungi.env$Interaction)
+Fungi.env$Time <- as.factor(Fungi.env$Time)
+Fungi.env$Cultivar <- as.factor(Fungi.env$Cultivar)
+summary(Fungi.env)
+attach(Fungi.env)
+
+H <- diversity(Fungi)
+data_richness <- specnumber(Fungi) 
+
+
+shapiro.test(H)
+shapiro.test(data_richness)
+
+
+
+kruskal.test(data_richness ~ Interaction)
+
+ 
+ alpha <- cbind(shannon = H, richness=data_richness, Fungi.env)
+ 
+ 
+ str(Fungi.env)
+
+ alpha$Interaction <- factor(alpha$Interaction, levels = c('CAB','CAM','CAE','COM','COE','IAB','IAM','IAE','IOM','IOE'))
+ 
+
+F1 <- ggplot(alpha, aes(x = Interaction, y = shannon)) +
+   geom_boxplot(aes(fill=Fungi.env$Time), width=0.5,lwd=0.2) +  
+   ggtitle("Shannon richness") + 
+  scale_fill_manual(values=c( "#F4A460", "#56B4E9","#40E0D0"))  + 
+  stat_compare_means(aes(label = "wilcox.test"), label.x = NULL, label.y = 4.3)  + facet_wrap(~Cultivar)+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),legend.position = "none")
+
+
+my_comparisons <- list( c("IOE", "COM"), c("IAE", "COM"))
+
+
+F2 <- ggplot(alpha, aes(x = Interaction, y = richness)) +
+   geom_boxplot() +  
+    ggtitle(" richness") + stat_compare_means(method = "anova", label.y = 40)+stat_compare_means(label = "p.signif", method = "t.test",
+                     ref.group = "0.5") + facet_wrap(~Cultivar)+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),legend.position = "none")
+  
+  
+  ggarrange( F2, F1,
+          labels = c("A", "B"),
+          ncol = 1, nrow = 2)
+  
+  ggsave("significance.pdf",width = 20, height = 20, units="cm", dpi=700)
+
+  #If kruskal is significant perform the following test for pairwise comparison
+pairwise.wilcox.test(H, Fungi.env$Interaction,   p.adjust.method = "BH")
+#Dunntest for pairwise comparison
+
+
+dunnTest(H, Fungi.env$Interaction, method="bh")
+  
+ 
+
+
+```
+
+
+```{r}
+#For fungi
+
+anova.sh = aov(data_richness ~ Fungi.env$Interaction)
+summary(anova.sh)
+TukeyHSD(anova.sh)
+```
+
