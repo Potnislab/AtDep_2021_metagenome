@@ -72,17 +72,189 @@ pairwise.wilcox.test(H, Fungi.env$Interaction,   p.adjust.method = "BH")
 
 dunnTest(H, Fungi.env$Interaction, method="bh")
   
- 
 
+#For Beta diversity
+---
+title: "Untitled"
+output: html_document
+date: '2022-05-10'
+---
+```{r}
+NMDS <- read.csv(file.choose(), header= TRUE, row.names = 1)
+NMDS
+NMDS.env <- read.csv(file.choose(),header = TRUE, row.names = 1)
+
+NMDS.env$Environment <- as.factor(NMDS.env$Environment)
+NMDS.env$innoculation <- as.factor(NMDS.env$innoculation)
+NMDS.env$time <- as.factor(NMDS.env$time)
+NMDS.env$cultivar <- as.factor(NMDS.env$cultivar)
+summary(NMDS.env)
+attach(NMDS.env)
 
 ```
 
 
 ```{r}
-#For fungi
 
-anova.sh = aov(data_richness ~ Fungi.env$Interaction)
-summary(anova.sh)
-TukeyHSD(anova.sh)
+
+#For nmds i just have a different table without base samples
+NMDS[is.na(NMDS)] <- 0
+
+
+library(vegan)
+
+
+Ordination.model1 <- metaMDS(NMDS, distance='bray', k=2, trymax=1, 
+  autotransform=FALSE, noshare=0.1, expand=TRUE, trace=1, plot=FALSE)
+plot(Ordination.model1) 
+
+#extract NMDS scores (x and y coordinates)
+data.scores = as.data.frame(scores(Ordination.model1))
+#add columns to data frame 
+data.scores$Environment = NMDS$Environment
+data.scores$cultivar = NMDS$cultivar
+data.scores$time= NMDS$time
+data.scores$innoculation= NMDS$innoculation
+ 
+head(data.scores)
+
+library(ggplot2)
+brewer.pal(n = 8, name = "Paired")
+
+F = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
+    geom_point(size = 4, aes( shape =time, colour = Cultivar)) +
+   scale_colour_manual(values=c("ECW" = "#FF7F00", "X10R" = "#5D3FD3"))+ ggtitle("NMDS between two cultivars")+  annotate("text", x = -3.5, y = 1.0, label = "Stress = 0.05783913")+ theme(legend.position="right")+   scale_shape_manual(values=c(3, 15, 16, 17, 18, 8,9,10,4))
+
+ggarrange(F,NULL, 
+          labels = c("A",""),
+          ncol = 2, nrow = 1, widths = c(1, 0.5))
+ggsave("fungi2.pdf",width = 20, height = 15, units="cm", dpi=700)
+
+ggsave("NMDSfungi_Cultivar&time.pdf",width = 20, height = 20, units="cm", dpi=700)
+
 ```
+
+
+```{r}
+dis <- vegdist(NMDS,method="bray")
+
+
+#For Cultivar
+dune.dist <- vegdist(NMDS, method="bray")
+dispersionC <- betadisper(dune.dist, group=NMDS.env$cultivar)
+permutest(dispersionC)
+plot(dispersionC, hull=FALSE, ellipse=TRUE) ##sd ellipse
+
+ano = anosim(NMDS, NMDS.env$cultivar, distance = "bray", permutations = 999)
+ano
+
+#For time
+dispersionT <- betadisper(dune.dist, group=NMDS.env$time)
+permutest(dispersionT)
+plot(dispersionT, hull=FALSE, ellipse=TRUE) ##sd ellipse
+adonis2(NMDS ~ Environment*innoculation*cultivar, data = NMDS.env, permutations = 999, method="bray")
+
+#For innoculation
+dispersionI <- betadisper(dune.dist, group=NMDS.env$innoculation)
+permutest(dispersionI)
+plot(dispersionI, hull=FALSE, ellipse=TRUE) ##sd ellipse
+ano = anosim(NMDS, NMDS.env$Innoculation, distance = "bray", permutations = 999)
+ano
+
+#For Environment
+dispersionE <- betadisper(dune.dist, group=NMDS.env$Environment)
+permutest(dispersionE)
+plot(dispersionI, hull=FALSE, ellipse=TRUE) ##sd ellipse
+ano = anosim(NMDS, NMDS.env$Innoculation, distance = "bray", permutations = 999)
+ano
+
+```
+
+
+```{r}
+#Effect of environment in innoculated samples (X10R)
+X10RI <- read.csv(file.choose(), header= TRUE, row.names = 1)
+X10RI
+X10RI.env <- read.csv(file.choose(),header = T, row.names = 1)
+
+X10RI.env$Environment <- as.factor(X10RI.env$Environment)
+X10RI.env$Interaction <- as.factor(X10RI.env$Interaction)
+X10RI.env$Time <- as.factor(X10RI.env$Time)
+X10RI.env$Cultivar <- as.factor(X10RI.env$Cultivar)
+summary(X10RI.env)
+attach(X10RI.env)
+
+X10RIdis <- vegdist(X10RI,method="bray")
+dispersionX10RI <- betadisper(X10RIdis, group=X10RI.env$Environment)
+permutest(dispersionX10RI)
+
+X10RI.div <- adonis2(X10RI ~ Time*Environment, data = X10RI.env, permutations = 999, method="bray")
+
+#IF betadispersaer is not significant, it means there is no dispersion between the groups and is likely to be homogenous. Groups which have similar dispersion may still be significantly different in regards to their centroids, which will be tested using a PERMANOVA.
+
+```
+
+
+```{r}
+X10RC <- read.csv(file.choose(), header= TRUE, row.names = 1)
+X10RC
+X10RC.env <- read.csv(file.choose(),header = T, row.names = 1)
+
+X10RC.env$Environment <- as.factor(X10RC.env$Environment)
+X10RC.env$Interaction <- as.factor(X10RC.env$Interaction)
+X10RC.env$Time <- as.factor(X10RC.env$Time)
+X10RC.env$Cultivar <- as.factor(X10RC.env$Cultivar)
+summary(X10RC.env)
+attach(X10RC.env)
+
+X10RCdis <- vegdist(X10RC,method="bray")
+dispersionX10RC <- betadisper(X10RCdis, group=X10RC.env$Environment)
+permutest(dispersionX10RC)
+
+X10RC.div <- adonis2(X10RC ~ Time*Environment, data = X10RC.env, permutations = 999, method="bray")
+
+```
+
+
+```{r}
+ECWI <- read.csv(file.choose(), header= TRUE, row.names = 1)
+ECWI
+ECWI.env <- read.csv(file.choose(),header = T, row.names = 1)
+
+ECWI.env$Environment <- as.factor(ECWI.env$Environment)
+ECWI.env$Interaction <- as.factor(ECWI.env$Interaction)
+ECWI.env$Time <- as.factor(ECWI.env$Time)
+ECWI.env$Cultivar <- as.factor(ECWI.env$Cultivar)
+summary(ECWI.env)
+attach(ECWI.env)
+
+ECWIdis <- vegdist(ECWI,method="bray")
+dispersionECWI <- betadisper(ECWIdis, group=ECWI.env$Environment)
+permutest(dispersionECWI)
+
+ECWI.div <- adonis2(ECWI ~ Time*Environment, data = ECWI.env, permutations = 999, method="bray")
+```
+
+
+```{r}
+ECWC <- read.csv(file.choose(), header= TRUE, row.names = 1)
+ECWC
+ECWC.env <- read.csv(file.choose(),header = T, row.names = 1)
+
+ECWC.env$Environment <- as.factor(ECWC.env$Environment)
+ECWC.env$Interaction <- as.factor(ECWC.env$Interaction)
+ECWC.env$Time <- as.factor(ECWC.env$Time)
+ECWC.env$Cultivar <- as.factor(ECWC.env$Cultivar)
+summary(ECWC.env)
+attach(ECWC.env)
+
+ECWCdis <- vegdist(ECWC,method="bray")
+dispersionECWC <- betadisper(ECWCdis, group=ECWC.env$Environment)
+permutest(dispersionECWC)
+
+ECWC.div <- adonis2(ECWC ~ Time*Environment, data = ECWC.env, permutations = 999, method="bray")
+
+```
+
+
 
