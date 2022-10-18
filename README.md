@@ -1,6 +1,6 @@
 # AtDep 2021 Metagenome
 
-This repository provides supporting information for the  following manuscript.
+This repository provides supporting information and the codes for the following manuscript.
 
 ### Adaptation of microbial communities associated with the phyllosphere in response to biotic and abiotic stress
 
@@ -13,7 +13,8 @@ Rishi Bhandari<sup>1</sup>, Alvaro Saez Sanz<sup>2</sup>, Courtney P. Leisner<su
 <sup>3</sup> Department of Biological Sciences, Auburn University, Auburn, Alabama AL 36849
 
 
-The manuscript has been submitted for peer review. The preprint of the manuscript is now available in biorxiv (https://www.biorxiv.org/content/10.1101/2022.10.14.512112v1). 
+
+The manuscript has been submitted for peer review and the preprint is now available in biorxiv (https://www.biorxiv.org/content/10.1101/2022.10.14.512112v1). 
 
 ## Abstract
 
