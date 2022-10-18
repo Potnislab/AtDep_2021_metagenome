@@ -24,8 +24,6 @@ While the physiological and transcriptional response of the host to biotic and a
 
 ## Data Availability
 
-The raw data and associated intermediate files will be soon available in figshare repository upon manuscript acceptance or upon reasonable request to the corresponding author, who can be reached at nzp0024@auburn.edu.
-
 The raw reads from this project has been deposited in the NCBI Short Read Archive under accession number PRJNA889178.
 
 ## Funding
