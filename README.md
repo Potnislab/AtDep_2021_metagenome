@@ -2,13 +2,15 @@
 
 This repository provides supporting information for the  following manuscript.
 
-**Adaptation of microbial communities associated with the phyllosphere in response to biotic and abiotic stress** 
+### Adaptation of microbial communities associated with the phyllosphere in response to biotic and abiotic stress
 
 Rishi Bhandari<sup>1</sup>, Alvaro Saez Sanz<sup>2</sup>, Courtney P. Leisner<sup>3</sup>, and Neha Potnis<sup>1</sup>
 
-1 Department of Entomology and Plant Pathology, Auburn University, Auburn, Alabama AL 36849
-2 Department of Crop, Soil and Environmental Sciences, Auburn University, Auburn, Alabama AL 36849
-3 Department of Biological Sciences, Auburn University, Auburn, Alabama AL 36849
+<sup>1</sup> Department of Entomology and Plant Pathology, Auburn University, Auburn, Alabama AL 36849
+
+<sup>2</sup> Department of Crop, Soil and Environmental Sciences, Auburn University, Auburn, Alabama AL 36849
+
+<sup>3</sup> Department of Biological Sciences, Auburn University, Auburn, Alabama AL 36849
 
 
 The manuscript has been submitted for peer review. The preprint of the manuscript is now available in biorxiv (https://www.biorxiv.org/content/10.1101/2022.10.14.512112v1). 
