@@ -547,7 +547,8 @@ permutest(disprtime)
 #The  ANOVA identified no significant differences between all the groups dispersion. So, we reject the hypothesis that these groups may have different dispersion.  Groups which have similar dispersion may still be significantly different in regards to their centroids, which will be tested using a PERMANOVA.
 
 #Run PERMANOVA on distances with ADONIS test
-vegan::adonis(all_bray_matrix ~ phyloseq::sample_data(Mid)$cultivar*phyloseq::sample_data(Mid)$environment*phyloseq::sample_data(Mid)$innoculation,  permutations = 1000)
+adonis2(all_bray_matrix ~ phyloseq::sample_data(Mid)$cultivar+phyloseq::sample_data(Mid)$environment+phyloseq::sample_data(Mid)$innoculation,  permutations = 1000,   by = "margin")
+
 
 #Effect of environment in innoculated samples (X10R)
 
@@ -559,7 +560,7 @@ innoc_bray_X10R <- phyloseq::distance(X10Rinnoc, method = "bray")
 disprinnocX10R <- vegan::betadisper(innoc_bray_X10R, phyloseq::sample_data(X10Rinnoc)$environment)
 permutest(disprinnocX10R)
 #ADONIS test
-vegan::adonis(innoc_bray_X10R ~ phyloseq::sample_data(X10Rinnoc)$environment*phyloseq::sample_data(X10Rinnoc)$time)
+adonis2(innoc_bray_X10R ~ phyloseq::sample_data(X10Rinnoc)$environment+phyloseq::sample_data(X10Rinnoc)$time,   by = "margin")
 
 #X10R control plants
 X10Rcont <- subset_samples(Beta_all, cultivar != "ECW" & innoculation != "Innoculated")
@@ -570,7 +571,7 @@ cont_bray_X10R <- phyloseq::distance(X10Rcont, method = "bray")
 disprcontX10R <- vegan::betadisper(cont_bray_X10R, phyloseq::sample_data(X10Rcont)$environment)
 permutest(disprcontX10R)
 #ADONIS test
-vegan::adonis(cont_bray_X10R ~ phyloseq::sample_data(X10Rcont)$environment*phyloseq::sample_data(X10Rcont)$time)
+adonis2(cont_bray_X10R ~ phyloseq::sample_data(X10Rcont)$environment+phyloseq::sample_data(X10Rcont)$time,   by = "margin")
 
 #Now for ECW innoc
 ECWinnoc <- subset_samples(Beta_all, cultivar != "X10R" & innoculation != "Control")
@@ -581,7 +582,7 @@ innoc_bray_ECW <- phyloseq::distance(ECWinnoc, method = "bray")
 disprinnocECW <- vegan::betadisper(innoc_bray_ECW, phyloseq::sample_data(ECWinnoc)$environment)
 permutest(disprinnocECW)
 #ADONIS test
-vegan::adonis(innoc_bray_ECW ~ phyloseq::sample_data(ECWinnoc)$environment*phyloseq::sample_data(ECWinnoc)$time)
+adonis2(innoc_bray_ECW ~ phyloseq::sample_data(ECWinnoc)$environment+phyloseq::sample_data(ECWinnoc)$time,   by = "margin")
 
 #Now for ECW control
 ECWcont <- subset_samples(Beta_all, cultivar != "X10R" & innoculation != "Innoculated")
@@ -592,7 +593,7 @@ cont_bray_ECW <- phyloseq::distance(ECWcont, method = "bray")
 disprcontECW <- vegan::betadisper(cont_bray_ECW, phyloseq::sample_data(ECWcont)$environment)
 permutest(disprcontECW)
 #ADONIS test
-vegan::adonis(cont_bray_ECW ~ phyloseq::sample_data(ECWcont)$environment*phyloseq::sample_data(ECWcont)$time)
+adonis2(cont_bray_ECW ~ phyloseq::sample_data(ECWcont)$environment+phyloseq::sample_data(ECWcont)$time,   by = "margin")
 
 ```
 
@@ -680,7 +681,7 @@ permutest(disprtime)
 #The  ANOVA identified no significant differences between all the groups dispersion. So, we reject the hypothesis that these groups may have different dispersion.  Groups which have similar dispersion may still be significantly different in regards to their centroids, which will be tested using a PERMANOVA.
 meta(prunedBeta_all)
 #Run PERMANOVA on distances with ADONIS test
-vegan::adonis(all_bray_matrix ~ phyloseq::sample_data(prunedBeta_all)$cultivar*phyloseq::sample_data(prunedBeta_all)$environment*phyloseq::sample_data(prunedBeta_all)$innoculation,  permutations = 1000)
+adonis2(all_bray_matrix ~ phyloseq::sample_data(prunedBeta_all)$cultivar+phyloseq::sample_data(prunedBeta_all)$environment+phyloseq::sample_data(prunedBeta_all)$innoculation,  permutations = 1000,   by = "margin")
 
 
 
