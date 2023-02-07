@@ -40,10 +40,11 @@ metadata_cog_full = read.csv("pepper_metadata_gf.txt", header = T)
 ```{r}
 
 library(vegan)
-adonis(bray_pa ~ environment * cultivar * innoculation , data = metadata_pa, 
-        by = "margin", permutations = 4999)
 
 adonis2(jaccard_pa ~ treatment + innoculation + cultivar + time, data = metadata_pa, 
+        by = "margin", permutations = 4999)
+
+adonis2(bray_pa ~ treatment + innoculation + cultivar + time, data = metadata_pa, 
         by = "margin", permutations = 4999)
 
 
