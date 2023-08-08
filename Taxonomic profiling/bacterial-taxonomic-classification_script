@@ -20,7 +20,7 @@ mkdir kraken_db
 
 #!/bin/bash
 source activate kraken2
-kraken2-build --standard –-threads 10 --db /scratch/aubrrb/kraken_db
+kraken2-build --standard –-threads 10 --db kraken_db
 
 
 #Then we build a standard kraken2 database with the following code (We ran the command through the queue as it required more than 150Gb space)
@@ -41,7 +41,7 @@ base=$(basename $fq1 _kneaddata_paired_1.fastq)
     echo "base name is $base"
     fq1=./${base}_kneaddata_paired_1.fastq
     fq2=./${base}_kneaddata_paired_2.fastq
-  kraken2 --db /scratch/aubrrb/kraken_db \
+  kraken2 --db kraken_db \
   --confidence 0.1 \
   --threads 4 \
   --use-names \
@@ -78,7 +78,7 @@ for i in ./*_report.txt
 do
   filename=$(basename "$i")
   fname="${filename%_report.txt}"
-  bracken -d /scratch/aubrrb/kraken_db -i $i -r 100 -t 10 -l S -o ${fname}_bracken.txt -w ${fname}_bracken_report.txt
+  bracken -d kraken_db -i $i -r 100 -t 10 -l S -o ${fname}_bracken.txt -w ${fname}_bracken_report.txt
 done
 
 
